@@ -5,10 +5,10 @@ import Notification from './components/Notification'
 import Footer from './components/Footer'
 
 const App = () => {
-  const [notes, setNotes] = useState(null)
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('null')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     noteservice
