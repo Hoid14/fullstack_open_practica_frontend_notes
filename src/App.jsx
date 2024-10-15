@@ -4,6 +4,9 @@ import noteservice from './services/notes'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
+import LoginForm from './components/LoginForm'
+import NoteForm from './components/NoteForm'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -13,7 +16,7 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null) //guarda un objeto que tiene el token, username y name
-
+  
   useEffect(() => {
     noteservice
       .getAll()
@@ -21,6 +24,16 @@ const App = () => {
         setNotes(initialNotes)
       })
   }, [])
+
+  //para manejar la primera carga de la pagina
+  useEffect(()=> {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if(loggedUserJSON){
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      noteservice.setToken(user.token)
+    }
+  }, []) //se ejecuta solo cuando el componente se renderiza por primera vez
 
   const handleLogin = async (event) => {
     //evita que se recargue la pagina
@@ -30,6 +43,12 @@ const App = () => {
       const user = await loginService.login({
         username, password
       })
+      //cuando se inicia sesion, los datos de un usuario se guardan en el almacenamiento local
+      window.localStorage.setItem(
+        'loggedNoteappUser', JSON.stringify(user)
+      )
+      //asigna a la variable token del archivo serveces/notes Bearer token
+      noteservice.setToken(user.token)
       setUser(user) //guarda el objeto con el token, username y name
       setUsername('')
       setPassword('')
@@ -41,6 +60,15 @@ const App = () => {
     }
   }
 
+  const handleLogOut = () => {
+    try{
+      window.localStorage.removeItem('loggedNoteappUser')
+      setUser(null)
+      noteservice.setToken(null)
+    } catch(error){
+      setErrorMessage('Wrong Log out')
+    }
+  }
   const toggleImportanceof = (id) => {
     const note = notes.find(n=>n.id ===id)
     const changedNote = {...note, important: !note.important}
@@ -85,38 +113,34 @@ const App = () => {
   ? notes
   : notes.filter(note => note.important ===true)
   
-  const loginForm = () => ( // cuando pongo parentesis, no hay necesidad de poner return
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-          <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-          <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
+  const loginForm = () => (
+    <Togglable buttonLabel='login'>
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleSubmit={handleLogin}
+      />
+    </Togglable>
+  )
+
+  const logOutButton = () => (
+    <>
+      <button onClick={handleLogOut}>
+        log out
+      </button>
+    </>
   )
 
   const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input
+    <Togglable buttonLabel="new note">
+      <NoteForm
+        onSubmit={addNote}
         value={newNote}
-        onChange={handleNoteChange}
+        handleChange={handleNoteChange}
       />
-      <button type="submit">save</button>
-    </form>  
+    </Togglable>
   )
   
   
@@ -127,9 +151,11 @@ const App = () => {
 
       {/* se utiliza para representar los formularios de manera condicional */}
       {user === null ?
-        loginForm() :
+        loginForm()
+        :
         <div>
           <p>{user.name} logged-in</p> {/*si el usuario esta loggeado muestra su nombre en la pantalla que ya viene en el estado user*/}
+          {logOutButton()}
           {noteForm()} {/*muestra el formulario para ingresar notas */}
         </div>
       }
