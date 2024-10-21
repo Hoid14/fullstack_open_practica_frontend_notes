@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Note from './components/Note'
 import noteservice from './services/notes'
 import loginService from './services/login'
@@ -16,6 +16,8 @@ const App = () => {
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null) //guarda un objeto que tiene el token, username y name
   
+  const noteFormRef = useRef()
+
   useEffect(() => {
     noteservice
       .getAll()
@@ -89,6 +91,7 @@ const App = () => {
   }
 
   const addNote = (noteObject) => {
+    noteFormRef.current.toggleVisibility()
     noteservice
     .create(noteObject)
     .then(returnedNote => {
@@ -121,7 +124,7 @@ const App = () => {
   )
 
   const noteForm = () => (
-    <Togglable buttonLabel="new note">
+    <Togglable buttonLabel="new note" ref={noteFormRef}>
       <NoteForm createNote={addNote}/>
     </Togglable>
   )
