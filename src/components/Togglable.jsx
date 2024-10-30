@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useState, forwardRef, useImperativeHandle } from 'react'
 
 const Togglable = forwardRef((props, refs) => {
@@ -28,6 +29,11 @@ const Togglable = forwardRef((props, refs) => {
     </div>
   )
 })
+
+// Muestra un mensaje en consola sino se pasa buttonLabel al componente
+Togglable.propTypes = {
+  buttonLabel: PropTypes.string.isRequired
+}
 
 //se usa para que en las herramientas de depuracion aparezca Togglable y no ForwardRef
 Togglable.displayName = 'Togglable'
