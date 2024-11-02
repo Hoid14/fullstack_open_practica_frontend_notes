@@ -12,10 +12,10 @@ const App = () => {
   const [notes, setNotes] = useState([])
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null) //guarda un objeto que tiene el token, username y name
-  
+
   const noteFormRef = useRef()
 
   useEffect(() => {
@@ -154,7 +154,7 @@ const App = () => {
         {
           notesToShow.map(note=>(
             <Note
-            key={note.id} 
+            key={note.id}
             note={note}
             toggleImportance={()=>toggleImportanceof(note.id)}
             />
