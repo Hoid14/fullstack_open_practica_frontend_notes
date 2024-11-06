@@ -128,7 +128,7 @@ const App = () => {
       <NoteForm createNote={addNote}/>
     </Togglable>
   )
-  
+
   return (
     <div>
       <h1>Notes</h1>
@@ -144,7 +144,7 @@ const App = () => {
           {noteForm()} {/*muestra el formulario para ingresar notas */}
         </div>
       }
-      
+
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all'}
