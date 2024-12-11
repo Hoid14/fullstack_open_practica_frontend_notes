@@ -27,7 +27,7 @@ const App = () => {
   }, [])
 
   //para manejar la primera carga de la pagina
-  useEffect(()=> {
+  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if(loggedUserJSON){
       const user = JSON.parse(loggedUserJSON)
@@ -39,7 +39,7 @@ const App = () => {
   const handleLogin = async (event) => {
     //evita que se recargue la pagina
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password
@@ -54,7 +54,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -71,38 +71,38 @@ const App = () => {
     }
   }
   const toggleImportanceof = (id) => {
-    const note = notes.find(n=>n.id ===id)
-    const changedNote = {...note, important: !note.important}
+    const note = notes.find(n => n.id ===id)
+    const changedNote = { ...note, important: !note.important }
 
     noteservice
-    .update(id,changedNote)
-    .then(returnedNNote=>{
-      setNotes(notes.map(n => n.id !== id ? n:returnedNNote))
-    })
-    .catch(error => {
-      setErrorMessage(
-        `Note '${note.content}' was already removed from server`
-      )
-      setTimeout(() => {
-        setErrorMessage(null)
-      },5000)
-      setNotes(notes.filter(n => n.id !==id))
-    })
+      .update(id,changedNote)
+      .then(returnedNNote => {
+        setNotes(notes.map(n => n.id !== id ? n:returnedNNote))
+      })
+      .catch(error => {
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        },5000)
+        setNotes(notes.filter(n => n.id !==id))
+      })
   }
 
   const addNote = (noteObject) => {
     noteFormRef.current.toggleVisibility()
     noteservice
-    .create(noteObject)
-    .then(returnedNote => {
-      setNotes(notes.concat(returnedNote))
-    })
+      .create(noteObject)
+      .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+      })
   }
 
   const notesToShow = showAll
-  ? notes
-  : notes.filter(note => note.important ===true)
-  
+    ? notes
+    : notes.filter(note => note.important ===true)
+
   const loginForm = () => (
     <Togglable buttonLabel='login'>
       <LoginForm
@@ -152,14 +152,14 @@ const App = () => {
       </div>
       <ul>
         {
-          notesToShow.map(note=>(
+          notesToShow.map(note => (
             <Note
-            key={note.id}
-            note={note}
-            toggleImportance={()=>toggleImportanceof(note.id)}
+              key={note.id}
+              note={note}
+              toggleImportance={() => toggleImportanceof(note.id)}
             />
-        ))}
-        
+          ))}
+
       </ul>
       <Footer />
     </div>

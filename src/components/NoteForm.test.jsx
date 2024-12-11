@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import NoteForm from './NoteForm'
 import userEvent from '@testing-library/user-event'
 
-test('<NoteForm /> updates parent state and calls onSubmit', () => {
+test('<NoteForm /> updates parent state and calls onSubmit', async () => {
   const createNote = vi.fn()
 
   render(<NoteForm createNote={createNote} />)
@@ -10,8 +10,10 @@ test('<NoteForm /> updates parent state and calls onSubmit', () => {
   const input = screen.getByPlaceholderText('write note content here')
   const sendButton = screen.getByText('save')
 
-  userEvent.type(input, 'testing a form...')
-  userEvent.click(sendButton)
+  await userEvent.type(input, 'testing a form...')
+  const response = await userEvent.click(sendButton)
+
+  console.log('response', response)
 
   console.log(createNote.mock.calls)
 
